@@ -8,22 +8,20 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors';
 import { AppService } from './app.service';
+import { SendMessageRequest } from './requests/sendMessageRequest';
 
-class Teste {
-  message: string;
-}
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @Post('message')
+  async postMessage(@Body() body: SendMessageRequest): Promise<void> {
+    return this.appService.sendMessage(body);
   }
 
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body: Teste) {
+  uploadFile(@UploadedFile() file: Express.Multer.File, @Body() body: any) {
     console.log(file);
     console.log(body);
   }
