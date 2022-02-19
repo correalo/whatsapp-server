@@ -11,12 +11,7 @@ export class TwilioService {
     this.client = twilio(this.accountSid, this.authToken);
   }
 
-  async sendMessage(
-    number: string,
-    message: string,
-    ddd: string = '11',
-    ddi: string = '+55',
-  ) {
+  async sendMessage(number: string, message: string, ddd = '11', ddi = '+55') {
     const response = await this.client.messages.create({
       body: message,
       from: 'whatsapp:+14155238886',
