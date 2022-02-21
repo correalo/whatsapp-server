@@ -1,9 +1,21 @@
 import { Column, Entity, PrimaryColumn } from 'typeorm';
 
-@Entity()
+@Entity('messages')
 export class Message {
-  @PrimaryColumn()
+  @PrimaryColumn({ nullable: false })
   id: string;
-  @Column()
+  @Column({ nullable: false })
   content: string;
+  @Column({
+    type: 'jsonb',
+    array: false,
+    default: () => "'[]'",
+    nullable: false,
+  })
+  params: Array<MessageParams>;
 }
+
+export type MessageParams = {
+  key: string;
+  type: 'string' | 'date' | 'datetime';
+};

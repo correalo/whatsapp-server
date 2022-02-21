@@ -1,11 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { SendMessageRequest } from '../requests/sendMessageRequest';
+import { SendMessageRequest } from '../requests/send.message.request';
 import { TwilioService } from '../twilio/twilio.service';
-import * as fs from 'fs';
-import * as csv from 'csv-parser';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Message } from 'src/entities/Message';
+import { MessageValidatorService } from 'src/validators/message.validator.service';
 
 @Injectable()
 export class MessageService {
@@ -13,20 +12,22 @@ export class MessageService {
     @InjectRepository(Message)
     private messageRepository: Repository<Message>,
     private readonly twilioService: TwilioService,
+    private readonly messageValidatorService: MessageValidatorService,
   ) {}
 
   async sendMessage(
     request: SendMessageRequest,
-    filePath: string,
+    buffer: Buffer,
   ): Promise<void> {
-    const pacients = await this.readCsvFile(filePath);
+    const csvLinesDto = this.parseCsvToObject(buffer);
     const message = await this.messageRepository.findOneOrFail(
       request.messageId,
     );
-    const promises = pacients.map((pacient) => {
+    this.messageValidatorService.validate(csvLinesDto, message.params);
+    const promises = csvLinesDto.map((csvLine) => {
       return this.twilioService.sendMessage(
-        pacient.numero,
-        this.buildMessage(pacient, message.content),
+        csvLine.numero,
+        this.buildMessage(csvLine, message.content),
       );
     });
     await Promise.all(promises);
@@ -38,17 +39,37 @@ export class MessageService {
     }, message);
   }
 
-  private async readCsvFile(path: string): Promise<Array<any>> {
-    const lines = [];
-
-    const readStream = fs
-      .createReadStream(path)
-      .pipe(csv())
-      .on('data', (data) => lines.push(data))
-      .on('end', () => lines);
-    for await (const chunk of readStream) {
-      console.log('>>> ' + JSON.stringify(chunk));
-    }
-    return lines;
+  private parseCsvToObject(buffer: Buffer): CsvLineDTO[] {
+    const lines = buffer.toString().replace(/\r/g, '').split('\n');
+    const header = lines.splice(0, 1)[0].split(',');
+    return lines.map((line) => {
+      const values = line.split(',');
+      const object = new Object();
+      header.forEach((param, index) => {
+        object[param] = values[index];
+      });
+      return object;
+    });
   }
+
+  // private async readCsvFile(path: string): Promise<Array<any>> {
+  //   const lines = [];
+
+  //   const readStream = fs
+  //     .createReadStream(path)
+  //     .pipe(csv())
+  //     .on('data', (data) => lines.push(data))
+  //     .on('end', () => lines);
+  //   for await (const chunk of readStream) {
+  //     console.log('>>> ' + JSON.stringify(chunk));
+  //   }
+  //   return lines;
+  // }
+}
+
+export class CsvLineDTO {
+  nome?: string;
+  data?: string;
+  numero?: string;
+  hora?: string;
 }

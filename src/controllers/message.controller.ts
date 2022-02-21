@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express/multer/interceptors';
 import { MessageService } from '../services/message.service';
-import { SendMessageRequest } from '../requests/sendMessageRequest';
+import { SendMessageRequest } from '../requests/send.message.request';
 
 @Controller()
 export class MessageController {
@@ -19,9 +19,6 @@ export class MessageController {
     @UploadedFile() file: Express.Multer.File,
     @Body() request: SendMessageRequest,
   ) {
-    const { buffer, ...rest } = file;
-    console.log(buffer.toString());
-
-    return this.messageService.sendMessage(request, file.path);
+    return this.messageService.sendMessage(request, file.buffer);
   }
 }
