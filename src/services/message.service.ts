@@ -15,14 +15,16 @@ export class MessageService {
     private readonly messageValidatorService: MessageValidatorService,
   ) {}
 
+  async findMessageById(id: string): Promise<Message> {
+    return this.messageRepository.findOneOrFail(id);
+  }
+
   async sendMessage(
     request: SendMessageRequest,
     buffer: Buffer,
   ): Promise<void> {
     const csvLinesDto = this.parseCsvToObject(buffer);
-    const message = await this.messageRepository.findOneOrFail(
-      request.messageId,
-    );
+    const message = await this.findMessageById(request.messageId);
     this.messageValidatorService.validate(csvLinesDto, message.params);
     const promises = csvLinesDto.map((csvLine) => {
       return this.twilioService.sendMessage(
