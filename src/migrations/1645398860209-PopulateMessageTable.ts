@@ -29,7 +29,7 @@ export class PopulateMessageTable1645398860209 implements MigrationInterface {
         VALUES(
         'operated_one_day_ago',
         'Olá \${nome} ! Tudo bem? \n\nPassando para lembrá-lo (a) da sua consulta com o Dr José Luís no próximo dia \${data} às \${hora} hs. Caso não possa comparecer, podemos fazer a consulta online tb. \n\nAguardamos você!',
-        '[{ "key": "nome", "type": "string" }, { "key": "data", "type": "date" }, { "key": "data", "type": "datetime" }]'
+        '[{ "key": "nome", "type": "string" }, { "key": "data", "type": "date" }, { "key": "hora", "type": "datetime" }]'
         )`,
       ),
     );

@@ -27,7 +27,6 @@ export class MessageValidatorService {
   }
 
   private isValidated(type: MessageParams['type'], value?: string): void {
-    console.log(type, value);
     switch (type) {
       case 'string': {
         if (validator.isEmpty(value) || !validator.isAlpha(value, 'pt-BR')) {
@@ -40,7 +39,7 @@ export class MessageValidatorService {
       case 'date': {
         if (
           validator.isEmpty(value) ||
-          !validator.isDate(value, { format: 'dd/MM/yyyy' })
+          !validator.isDate(value, { format: 'dd/MM/yyyy', strictMode: true })
         ) {
           throw new ValidatorError(
             `Valor inválido: ${value}. Campo não pode ser vazio e deve ser uma data com o formato 'dd/MM/yyyy'`,
@@ -51,7 +50,7 @@ export class MessageValidatorService {
       case 'datetime': {
         if (
           validator.isEmpty(value) ||
-          !validator.isDate(value, { format: 'HH:MM' })
+          !validator.isDate(value, { format: 'HH:MM', strictMode: true })
         ) {
           throw new ValidatorError(
             `Valor inválido: ${value}. Campo não pode ser vazio e deve ser um horário com o formato 'HH:MM'`,
