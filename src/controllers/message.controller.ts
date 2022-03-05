@@ -15,6 +15,17 @@ import { Message } from 'src/entities/Message';
 @Controller('message')
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
+  @Get()
+  async findAll(): Promise<MessageDTO[]> {
+    return await this.messageService.findAll().then((response) =>
+      response.map((message) => {
+        return {
+          id: message.id,
+          description: message.description,
+        };
+      }),
+    );
+  }
 
   @Get(':id')
   async findOne(@Param() params): Promise<Message> {
@@ -29,4 +40,9 @@ export class MessageController {
   ) {
     return this.messageService.sendMessage(request, file.buffer);
   }
+}
+
+export class MessageDTO {
+  id: string;
+  description: string;
 }

@@ -5,6 +5,8 @@ export class Message {
   @PrimaryColumn({ nullable: false })
   id: string;
   @Column({ nullable: false })
+  description: string;
+  @Column({ nullable: false })
   content: string;
   @Column({
     type: 'jsonb',

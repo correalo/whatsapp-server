@@ -18,6 +18,11 @@ export class CreateTableColumns1645398561591 implements MigrationInterface {
             isNullable: false,
           },
           {
+            name: 'description',
+            type: 'varchar',
+            isNullable: false,
+          },
+          {
             name: 'params',
             type: 'jsonb',
             isNullable: false,

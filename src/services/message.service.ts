@@ -15,6 +15,10 @@ export class MessageService {
     private readonly messageValidatorService: MessageValidatorService,
   ) {}
 
+  async findAll(): Promise<Message[]> {
+    return this.messageRepository.find();
+  }
+
   async findMessageById(id: string): Promise<Message> {
     return this.messageRepository.findOneOrFail(id);
   }
